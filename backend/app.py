@@ -1,19 +1,19 @@
-from flask import Flask, request
+from flask import Flask
 from routes.transactions import bp as transactions_bp
 
 
-DATE_FORMAT = "%Y-%m-%d"
+def create_app() -> Flask:
+    app = Flask(__name__)
 
+    @app.route("/")
+    def index():
+        return "Hello world"
 
-app = Flask(__name__)
+    app.register_blueprint(transactions_bp)
 
+    return app
 
-@app.route("/")
-def index():
-    return "Hello world"
-
-
-app.register_blueprint(transactions_bp)
 
 if __name__ == "__main__":
+    app = create_app()
     app.run()

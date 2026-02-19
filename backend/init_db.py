@@ -1,3 +1,4 @@
+import psycopg
 from pathlib import Path
 
 
@@ -11,8 +12,13 @@ POSTGRESQL_OPTIONS = {
 }
 
 
-with psycopg.connect(**POSTGRESQL_OPTIONS) as conn:
-    with conn.cursor() as cur:
-        schema_contents = Path("schema.sql").read_text()
-        cur.execute(schema_contents)
-        conn.commit()
+def init_db() -> None:
+    with psycopg.connect(**POSTGRESQL_OPTIONS) as conn:
+        with conn.cursor() as cur:
+            schema_contents = Path("schema.sql").read_text()
+            cur.execute(schema_contents)
+            conn.commit()
+
+
+if __name__ == "__main__":
+    init_db()
