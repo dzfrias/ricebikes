@@ -22,10 +22,10 @@ services:
 
   web:
     build: .
+    init: true
     ports:
       - "127.0.0.1:5000:5000"
     depends_on:
       - db
     environment:
       DATABASE_URL: postgresql://ricebikes:ricebikes@db:5432/ricebikesdb
-    stop_grace_period: 2s
