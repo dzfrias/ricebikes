@@ -77,7 +77,7 @@ def create():
         email=data["customer"]["email"],
         phone_number=data["customer"].get("phone_number"),
     )
-    customer_id = transactions.add_customer(customer)
+    customer_id = transactions.add_or_update_customer(customer)
     transaction = Transaction(
         bike_id=bike_id,
         customer_id=customer_id,

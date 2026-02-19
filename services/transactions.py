@@ -83,7 +83,7 @@ def add_bike(bike: Bike) -> int:
             return bike_id
 
 
-def add_customer(customer: Customer) -> int:
+def add_or_update_customer(customer: Customer) -> int:
     with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor(row_factory=psycopg.rows.scalar_row) as cur:
             customer_id = cur.execute(
