@@ -240,7 +240,7 @@ def test_create_transaction_bad_json(client):
         "/api/transactions/create",
         json={
             "date": "2025-02-17",
-            "total_cost": "20.20",
+            "total_cost": 20.20,
             "customer": {
                 "first_name": "Diego",
                 "last_name": "Frias",
@@ -255,7 +255,7 @@ def test_create_transaction_bad_json(client):
         "/api/transactions/create",
         json={
             "date": "20250217",
-            "total_cost": "20.20",
+            "total_cost": 20.20,
             "customer": {
                 "first_name": "Diego",
                 "last_name": "Frias",
