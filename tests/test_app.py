@@ -235,3 +235,33 @@ def test_create_transaction_bad_json(client):
         data="{",
     )
     assert create_response.status_code == 400
+    # Bad email format
+    create_response = client.post(
+        "/api/transactions/create",
+        json={
+            "date": "2025-02-17",
+            "total_cost": "20.20",
+            "customer": {
+                "first_name": "Diego",
+                "last_name": "Frias",
+                "email": "maildzfrias.dev",
+            },
+            "bike": {"make": "Domane", "model": "Trek"},
+        },
+    )
+    assert create_response.status_code == 400
+    # Bad date format
+    create_response = client.post(
+        "/api/transactions/create",
+        json={
+            "date": "20250217",
+            "total_cost": "20.20",
+            "customer": {
+                "first_name": "Diego",
+                "last_name": "Frias",
+                "email": "maildzfrias.dev",
+            },
+            "bike": {"make": "Domane", "model": "Trek"},
+        },
+    )
+    assert create_response.status_code == 400
