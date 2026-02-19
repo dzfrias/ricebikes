@@ -8,6 +8,12 @@ Start the web server:
 docker compose up
 ```
 
+To remove the related containers and volumes after you're done, run:
+
+```
+docker compose down -v
+```
+
 ## Testing
 
 Run tests:
