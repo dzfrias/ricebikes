@@ -12,7 +12,7 @@ bp = Blueprint("transactions", __name__)
 
 
 @bp.get("/api/transactions")
-def get_all():
+def get_all() -> None:
     return transactions.get_transactions()
 
 
@@ -50,7 +50,7 @@ CREATE_TRANSACTION_SCHEMA = {
 
 
 @bp.post("/api/transactions/create")
-def create():
+def create() -> None:
     data = request.json
     try:
         jsonschema.validate(
@@ -61,7 +61,7 @@ def create():
     except jsonschema.ValidationError as e:
         return f"Bad JSON payload: {e.message}", 400
     try:
-        mdy = datetime.strptime(data["date"], DATE_FORMAT).date()
+        date = datetime.strptime(data["date"], DATE_FORMAT).date()
     except ValueError:
         return (
             "Bad date format for `date` field in request. Expected YYYY-MM-DD.",
@@ -79,7 +79,7 @@ def create():
     transaction = Transaction(
         bike_id=bike_id,
         customer_id=customer_id,
-        mdy=datetime.strptime(data["date"], DATE_FORMAT).date(),
+        date=date,
         total_cost=data["total_cost"],
     )
     transaction_id = transactions.add_transaction(transaction)
@@ -88,6 +88,6 @@ def create():
 
 
 @bp.delete("/api/transactions/delete/<int:id>")
-def delete(id: int):
-    transactions.delete(id)
+def delete(id: int) -> None:
+    transactions.delete_transaction(id)
     return "", 204

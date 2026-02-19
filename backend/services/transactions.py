@@ -125,7 +125,12 @@ def add_transaction(transaction: Transaction) -> int:
                 VALUES (%s, %s, %s, %s)
                 RETURNING transaction_id;
                 """,
-                (bike_id, customer_id, total_cost, mdy),
+                (
+                    transaction.bike_id,
+                    transaction.customer_id,
+                    transaction.total_cost,
+                    transaction.date,
+                ),
             ).fetchone()
             conn.commit()
             return transaction_id
