@@ -12,7 +12,7 @@ bp = Blueprint("transactions", __name__)
 
 
 @bp.get("/api/transactions")
-def get_all() -> None:
+def get_all():
     return transactions.get_transactions()
 
 
@@ -50,7 +50,7 @@ CREATE_TRANSACTION_SCHEMA = {
 
 
 @bp.post("/api/transactions/create")
-def create() -> None:
+def create():
     data = request.json
     try:
         jsonschema.validate(
@@ -88,6 +88,6 @@ def create() -> None:
 
 
 @bp.delete("/api/transactions/delete/<int:id>")
-def delete(id: int) -> None:
+def delete(id: int):
     did_delete = transactions.delete_transaction(id)
     return "", 204 if did_delete else 404
