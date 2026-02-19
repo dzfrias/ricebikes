@@ -7,6 +7,9 @@ DATE_FORMAT = "%Y-%m-%d"
 
 
 def get_transactions() -> list[dict]:
+    """
+    Returns the list of transactions in the database as a serialized dictionary.
+    """
     with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
             raw_transactions = cur.execute(
@@ -73,6 +76,9 @@ def get_transactions() -> list[dict]:
 
 
 def add_bike(bike: Bike) -> int:
+    """
+    Add a bike to the database and return its id.
+    """
     with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor(row_factory=psycopg.rows.scalar_row) as cur:
             bike_id = cur.execute(
@@ -84,6 +90,12 @@ def add_bike(bike: Bike) -> int:
 
 
 def add_or_update_customer(customer: Customer) -> int:
+    """
+    Add a customer to the database and return its id.
+
+    If a customer in the database with the same email as provided is found, the customer's data
+    old data will be overridden. IMPORTANT: this function is not idempotent due to this behavior.
+    """
     with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor(row_factory=psycopg.rows.scalar_row) as cur:
             customer_id = cur.execute(
@@ -109,6 +121,9 @@ def add_or_update_customer(customer: Customer) -> int:
 
 
 def add_transaction(transaction: Transaction) -> int:
+    """
+    Add a transaction to the database and return its id.
+    """
     with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor(row_factory=psycopg.rows.scalar_row) as cur:
             transaction_id = cur.execute(
@@ -129,6 +144,13 @@ def add_transaction(transaction: Transaction) -> int:
 
 
 def delete_transaction(id: int) -> bool:
+    """
+    Delete a transaction from the database with the given id. Returns a boolean indicating if
+    the operation was successful.
+
+    If a value of `False` is returned, it means that the transaction with the given id did not
+    exist in the database.
+    """
     with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor(row_factory=psycopg.rows.scalar_row) as cur:
             deleted = cur.execute(

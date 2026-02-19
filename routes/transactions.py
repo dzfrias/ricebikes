@@ -7,9 +7,6 @@ from flask import Blueprint, request
 from models.transactions import Transaction, Bike, Customer
 
 
-DATE_FORMAT = "%Y-%m-%d"
-
-
 bp = Blueprint("transactions", __name__)
 
 
@@ -56,7 +53,7 @@ def create():
     try:
         data = json.loads(request.data, parse_float=Decimal)
     except json.JSONDecodeError:
-        return f"Malformed JSON", 400
+        return "Malformed JSON received", 400
     try:
         jsonschema.validate(
             instance=data,
@@ -66,7 +63,7 @@ def create():
     except jsonschema.ValidationError as e:
         return f"Bad JSON payload: {e.message}", 400
     try:
-        date = datetime.strptime(data["date"], DATE_FORMAT).date()
+        date = datetime.strptime(data["date"], transactions.DATE_FORMAT).date()
     except ValueError:
         return (
             "Bad date format for `date` field in request. Expected YYYY-MM-DD.",
@@ -95,4 +92,5 @@ def create():
 @bp.delete("/api/transactions/delete/<int:id>")
 def delete(id: int):
     did_delete = transactions.delete_transaction(id)
+    # 404 if the resource was not found, 204 if deletion was successful
     return "", 204 if did_delete else 404
