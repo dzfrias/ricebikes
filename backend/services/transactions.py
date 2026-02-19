@@ -136,12 +136,12 @@ def add_transaction(transaction: Transaction) -> int:
             return transaction_id
 
 
-def delete_transaction(id: int) -> None:
+def delete_transaction(id: int) -> bool:
     with psycopg.connect(**POSTGRESQL_OPTIONS) as conn:
-        with conn.cursor() as cur:
-            # TODO: error handling
-            cur.execute(
-                "DELETE FROM repair_transactions WHERE transaction_id = %s;", (id,)
-            )
+        with conn.cursor(row_factory=psycopg.rows.scalar_row) as cur:
+            deleted = cur.execute(
+                "DELETE FROM repair_transactions WHERE transaction_id = %s RETURNING transaction_id;",
+                (id,),
+            ).fetchall()
             conn.commit()
-    return "", 204
+            return len(deleted) == 1

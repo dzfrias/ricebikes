@@ -89,5 +89,5 @@ def create() -> None:
 
 @bp.delete("/api/transactions/delete/<int:id>")
 def delete(id: int) -> None:
-    transactions.delete_transaction(id)
-    return "", 204
+    did_delete = transactions.delete_transaction(id)
+    return "", 204 if did_delete else 404

@@ -189,3 +189,10 @@ def test_delete_transaction(client):
     get_response = client.get("/api/transactions")
     assert get_response.status_code == 200
     assert all(transaction["transaction_id"] != 1 for transaction in get_response.json)
+
+
+def test_double_delete_transaction(client):
+    delete_response = client.delete("/api/transactions/delete/1")
+    assert delete_response.status_code == 204
+    delete_response2 = client.delete("/api/transactions/delete/1")
+    assert delete_response2.status_code == 404
