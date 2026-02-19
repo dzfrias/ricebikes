@@ -85,6 +85,7 @@ def add_bike(bike: Bike) -> int:
                 "INSERT INTO bikes (make, model) VALUES (%s, %s) RETURNING bike_id;",
                 (bike.make, bike.model),
             ).fetchone()
+            assert bike_id is not None
             conn.commit()
             return bike_id
 
@@ -116,6 +117,7 @@ def add_or_update_customer(customer: Customer) -> int:
                     customer.phone_number,
                 ),
             ).fetchone()
+            assert customer_id is not None
             conn.commit()
             return customer_id
 
@@ -139,6 +141,7 @@ def add_transaction(transaction: Transaction) -> int:
                     transaction.date,
                 ),
             ).fetchone()
+            assert transaction_id is not None
             conn.commit()
             return transaction_id
 
