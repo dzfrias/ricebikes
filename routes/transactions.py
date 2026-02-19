@@ -53,7 +53,10 @@ CREATE_TRANSACTION_SCHEMA = {
 
 @bp.post("/api/transactions/create")
 def create():
-    data = json.loads(request.data, parse_float=Decimal)
+    try:
+        data = json.loads(request.data, parse_float=Decimal)
+    except json.JSONDecodeError:
+        return f"Malformed JSON", 400
     try:
         jsonschema.validate(
             instance=data,

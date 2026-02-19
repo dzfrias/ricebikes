@@ -197,3 +197,41 @@ def test_double_delete_transaction(client):
     assert delete_response.status_code == 204
     delete_response2 = client.delete("/api/transactions/delete/1")
     assert delete_response2.status_code == 404
+
+
+def test_create_transaction_bad_json(client):
+    # Missing field
+    create_response = client.post(
+        "/api/transactions/create",
+        json={
+            "total_cost": 20.20,
+            "customer": {
+                "first_name": "Diego",
+                "last_name": "Frias",
+                "email": "mail@dzfrias.dev",
+            },
+            "bike": {"make": "Domane", "model": "Trek"},
+        },
+    )
+    assert create_response.status_code == 400
+    # Bad field type
+    create_response = client.post(
+        "/api/transactions/create",
+        json={
+            "date": "2025-02-17",
+            "total_cost": "20.20",
+            "customer": {
+                "first_name": "Diego",
+                "last_name": "Frias",
+                "email": "mail@dzfrias.dev",
+            },
+            "bike": {"make": "Domane", "model": "Trek"},
+        },
+    )
+    assert create_response.status_code == 400
+    # Malformed data
+    create_response = client.post(
+        "/api/transactions/create",
+        data="{",
+    )
+    assert create_response.status_code == 400
