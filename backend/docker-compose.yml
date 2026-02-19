@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ricebikes
+      POSTGRES_PASSWORD: ricebikes
+      POSTGRES_DB: ricebikesdb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ricebikes -d ricebikesdb"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "python init_db.py"
+    environment:
+      DATABASE_URL: postgresql://ricebikes:ricebikes@db:5432/ricebikesdb
+
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:5000:5000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://ricebikes:ricebikes@db:5432/ricebikesdb
+    stop_grace_period: 2s

@@ -1,21 +1,13 @@
 import psycopg
+import os
 from models.transactions import Transaction, Bike, Customer
 
 
-# Options for connnecting to the PostgreSQL server. Note that this would change depending on if a
-# production build was deployed.
-POSTGRESQL_OPTIONS = {
-    "host": "localhost",
-    "port": 5432,
-    "dbname": "ricebikesdb",
-    "user": "ricebikes",
-    "password": "ricebikes",
-}
 DATE_FORMAT = "%Y-%m-%d"
 
 
 def get_transactions() -> list[dict]:
-    with psycopg.connect(**POSTGRESQL_OPTIONS) as conn:
+    with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
             raw_transactions = cur.execute(
                 """
@@ -81,7 +73,7 @@ def get_transactions() -> list[dict]:
 
 
 def add_bike(bike: Bike) -> int:
-    with psycopg.connect(**POSTGRESQL_OPTIONS) as conn:
+    with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor(row_factory=psycopg.rows.scalar_row) as cur:
             bike_id = cur.execute(
                 "INSERT INTO bikes (make, model) VALUES (%s, %s) RETURNING bike_id;",
@@ -92,7 +84,7 @@ def add_bike(bike: Bike) -> int:
 
 
 def add_customer(customer: Customer) -> int:
-    with psycopg.connect(**POSTGRESQL_OPTIONS) as conn:
+    with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor(row_factory=psycopg.rows.scalar_row) as cur:
             customer_id = cur.execute(
                 """
@@ -117,7 +109,7 @@ def add_customer(customer: Customer) -> int:
 
 
 def add_transaction(transaction: Transaction) -> int:
-    with psycopg.connect(**POSTGRESQL_OPTIONS) as conn:
+    with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor(row_factory=psycopg.rows.scalar_row) as cur:
             transaction_id = cur.execute(
                 """
@@ -137,7 +129,7 @@ def add_transaction(transaction: Transaction) -> int:
 
 
 def delete_transaction(id: int) -> bool:
-    with psycopg.connect(**POSTGRESQL_OPTIONS) as conn:
+    with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor(row_factory=psycopg.rows.scalar_row) as cur:
             deleted = cur.execute(
                 "DELETE FROM repair_transactions WHERE transaction_id = %s RETURNING transaction_id;",

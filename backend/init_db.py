@@ -1,19 +1,10 @@
 import psycopg
+import os
 from pathlib import Path
 
 
-# TODO: glboal constants file
-POSTGRESQL_OPTIONS = {
-    "host": "localhost",
-    "port": 5432,
-    "dbname": "ricebikesdb",
-    "user": "ricebikes",
-    "password": "ricebikes",
-}
-
-
 def init_db() -> None:
-    with psycopg.connect(**POSTGRESQL_OPTIONS) as conn:
+    with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
         with conn.cursor() as cur:
             schema_contents = Path("schema.sql").read_text()
             cur.execute(schema_contents)
