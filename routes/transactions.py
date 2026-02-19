@@ -1,6 +1,8 @@
 import services.transactions as transactions
 import jsonschema
+import json
 from datetime import datetime
+from decimal import Decimal
 from flask import Blueprint, request
 from models.transactions import Transaction, Bike, Customer
 
@@ -51,7 +53,7 @@ CREATE_TRANSACTION_SCHEMA = {
 
 @bp.post("/api/transactions/create")
 def create():
-    data = request.json
+    data = json.loads(request.data, parse_float=Decimal)
     try:
         jsonschema.validate(
             instance=data,

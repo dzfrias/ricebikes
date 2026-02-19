@@ -1,5 +1,6 @@
 import datetime
 from dataclasses import dataclass
+from decimal import Decimal
 
 
 @dataclass
@@ -20,6 +21,5 @@ class Customer:
 class Transaction:
     bike_id: int
     customer_id: int
-    # TODO: maybe Decimal?
-    total_cost: float
+    total_cost: Decimal
     date: datetime.date
