@@ -2,7 +2,7 @@
 
 ## Running
 
-Start the web server:
+To start the web server:
 
 ```
 docker compose up
@@ -16,7 +16,7 @@ docker compose down -v
 
 ## Testing
 
-Run tests:
+To run tests:
 
 ```
 docker compose exec web python -m pytest
@@ -73,3 +73,14 @@ I will now talk about some of the design decisions I made:
    high chance of breaking, having safety vulnerabilities, and causing maintainability headaches. For
    a project requiring a complicated front end, I would consider using React or Svelte. Native web
    components generally can get the job done pretty well, though.
+
+Another note is that I saw lots of opportunities for network optimizations (preloading much of the
+information is possible), but I stayed away from that to stay in accordance with the take home
+assignment document.
+
+## Features
+
+- All features in the document requested
+- The ability to create and delete transactions on the frontend and on the backend
+- Various table niceities
+- Front end doesn't look half-bad (thanks Claude)
