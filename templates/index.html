@@ -508,7 +508,7 @@
           errorMsg.classList.add('visible');
           return;
         }
-        if (parseFloat(cost) === null) {
+        if (!parseFloat(cost)) {
           errorMsg.innerText = '⚠ Please input correct cost value';
           errorMsg.classList.add('visible');
           return;
