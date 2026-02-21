@@ -3,7 +3,7 @@ import jsonschema
 import json
 from datetime import datetime
 from decimal import Decimal
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 from models.transactions import Transaction, Bike, Customer
 
 

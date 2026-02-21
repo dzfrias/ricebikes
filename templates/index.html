@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rice Bikes</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0e0e0e;
+        --surface: #161616;
+        --surface2: #1e1e1e;
+        --border: #2a2a2a;
+        --accent: #e8ff47;
+        --accent2: #ff6b35;
+        --text: #f0f0f0;
+        --muted: #666;
+        --danger: #ff4444;
+        --danger-dim: rgba(255, 68, 68, 0.12);
+        --row-hover: #1c1c1c;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'DM Sans', sans-serif;
+        min-height: 100vh;
+        padding: 48px 32px;
+      }
+
+      /* Background texture */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          radial-gradient(
+            circle at 20% 50%,
+            rgba(232, 255, 71, 0.03) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(255, 107, 53, 0.04) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      header {
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+        margin-bottom: 40px;
+      }
+
+      h1 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 72px;
+        line-height: 1;
+        letter-spacing: 2px;
+        color: var(--text);
+      }
+
+      h1 span {
+        color: var(--accent);
+      }
+
+      .subtitle {
+        font-size: 13px;
+        color: var(--muted);
+        font-family: 'DM Mono', monospace;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+      }
+
+      .count-badge {
+        display: inline-block;
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        background: var(--accent);
+        color: #000;
+        padding: 2px 8px;
+        border-radius: 2px;
+        font-weight: 500;
+        margin-left: 16px;
+        vertical-align: middle;
+      }
+
+      .table-wrapper {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      thead {
+        background: var(--surface2);
+        border-bottom: 2px solid var(--accent);
+      }
+
+      thead th {
+        font-family: 'DM Mono', monospace;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 14px 16px;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      thead th:last-child {
+        text-align: center;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background 0.15s ease;
+      }
+
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      tbody tr:hover {
+        background: var(--row-hover);
+      }
+
+      tbody tr.removing {
+        animation: fadeOut 0.3s ease forwards;
+      }
+
+      @keyframes fadeOut {
+        to {
+          opacity: 0;
+          transform: translateX(-8px);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      tbody tr.new-row {
+        animation: fadeIn 0.3s ease forwards;
+      }
+
+      td {
+        padding: 14px 16px;
+        color: var(--text);
+        vertical-align: middle;
+      }
+
+      td.date {
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      td.name {
+        font-weight: 500;
+      }
+
+      td.email {
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        color: #aaa;
+      }
+
+      td.bike {
+        color: var(--accent2);
+        font-weight: 500;
+      }
+
+      td.cost {
+        font-family: 'DM Mono', monospace;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--accent);
+      }
+
+      td.actions {
+        text-align: center;
+      }
+
+      .btn-delete {
+        background: transparent;
+        border: 1px solid #333;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 12px;
+        font-family: 'DM Mono', monospace;
+        padding: 5px 10px;
+        border-radius: 2px;
+        letter-spacing: 0.5px;
+        transition: all 0.15s ease;
+      }
+
+      .btn-delete:hover {
+        background: var(--danger-dim);
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+
+      /* Add row */
+      .add-row {
+        background: #111;
+        border-top: 2px solid var(--border);
+      }
+
+      .add-row td {
+        padding: 12px 16px;
+      }
+
+      .add-row input {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        padding: 8px 10px;
+        border-radius: 2px;
+        outline: none;
+        transition: border-color 0.15s ease;
+      }
+
+      .add-row input::placeholder {
+        color: #3a3a3a;
+        font-size: 12px;
+      }
+
+      .add-row input:focus {
+        border-color: var(--accent);
+        background: #1a1a1a;
+      }
+
+      .btn-add {
+        background: var(--accent);
+        border: none;
+        color: #000;
+        cursor: pointer;
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 9px 14px;
+        border-radius: 2px;
+        width: 100%;
+        transition: all 0.15s ease;
+      }
+
+      .btn-add:hover {
+        background: #d4eb30;
+        transform: translateY(-1px);
+      }
+
+      .btn-add:active {
+        transform: translateY(0);
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 48px;
+        color: var(--muted);
+        font-family: 'DM Mono', monospace;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+      }
+
+      /* Footer stats */
+      .table-footer {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 24px;
+        padding: 14px 16px;
+        background: var(--surface2);
+        border-top: 1px solid var(--border);
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .table-footer span b {
+        color: var(--accent);
+        font-weight: 500;
+      }
+
+      .error-msg {
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--danger);
+        padding: 6px 16px 0;
+        display: none;
+      }
+
+      .error-msg.visible {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div>
+          <div class="subtitle">TRANSACTIONS</div>
+          <h1>RICE <span>BIKES</span></h1>
+        </div>
+      </header>
+
+      <div class="table-wrapper">
+        <table id="ordersTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer Name</th>
+              <th>Email</th>
+              <th>Bike</th>
+              <th>Total Cost</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <!-- rows injected by JS -->
+          </tbody>
+          <tfoot>
+            <tr class="add-row">
+              <td><input type="date" id="inp-date" /></td>
+              <td>
+                <input type="text" id="inp-name" placeholder="Jane Smith" />
+              </td>
+              <td>
+                <input
+                  type="email"
+                  id="inp-email"
+                  placeholder="jane@email.com"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="inp-bike"
+                  placeholder="Trek Domane SL6"
+                />
+              </td>
+              <td><input type="text" id="inp-cost" placeholder="2499" /></td>
+              <td>
+                <button id="btn-add-transaction" class="btn-add">+ Add</button>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+        <div class="error-msg" id="errorMsg">
+          ⚠ Please fill in all fields before adding.
+        </div>
+        <div class="table-footer">
+          <span>ROWS <b id="rowCount">0</b></span>
+          <span>TOTAL <b id="totalCost">$0</b></span>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      function parseCost(str) {
+        return parseFloat(str.replace(/[^0-9.]/g, '')) || 0;
+      }
+
+      function formatCost(str) {
+        const n = parseCost(str);
+        return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0 });
+      }
+
+      function updateStats() {
+        const rows = document.querySelectorAll('#tbody tr');
+        document.getElementById('rowCount').textContent = rows.length;
+        let total = 0;
+        rows.forEach((row) => {
+          const costCell = row.querySelector('td.cost');
+          if (costCell) total += parseCost(costCell.textContent);
+        });
+        document.getElementById('totalCost').textContent =
+          '$' + total.toLocaleString('en-US');
+      }
+
+      async function deleteRow(btn) {
+        btn.disabled = true;
+        const row = btn.closest('tr');
+        const tbody = row.parent;
+        row.classList.add('removing');
+        const timeoutId = setTimeout(() => {
+          row.remove();
+          updateStats();
+        }, 300);
+        const transaction_id = parseInt(btn.id.split('-')[1]);
+        const response = await fetch(
+          `/api/transactions/delete/${transaction_id}`,
+          {
+            method: 'DELETE',
+          },
+        );
+        if (response.status == 404) {
+          // This should not happen, but if it does, add the row back to the DOM
+          console.error(
+            `Transaction delete with id ${transaction_id} not found on server`,
+          );
+          row.classList.remove('removing');
+          clearTimeout(timeoutId);
+          // Edge case where the row has been removed from the DOM since our `await`
+          if (!tbody.contains(row)) {
+            tbody.appendChild(row);
+            updateStats();
+          }
+          alert(
+            'There was a problem completing this transaction. Check logs for details',
+          );
+        }
+      }
+
+      function createRow(data, animate = false) {
+        const tr = document.createElement('tr');
+        if (animate) tr.classList.add('new-row');
+        if (data.id !== null) {
+          tr.innerHTML = `
+          <td class="date">${data.date}</td>
+          <td class="name">${data.name}</td>
+          <td class="email">${data.email}</td>
+          <td class="bike">${data.bike}</td>
+          <td class="cost">${formatCost(data.cost)}</td>
+          <td class="actions"><button class="btn-delete" id=transaction-${data.id}>Complete</button></td>
+          `;
+        } else {
+          tr.innerHTML = `
+          <td class="date">${data.date}</td>
+          <td class="name">${data.name}</td>
+          <td class="email">${data.email}</td>
+          <td class="bike">${data.bike}</td>
+          <td class="cost">${formatCost(data.cost)}</td>
+          <td class="actions"><button class="btn-delete" disabled>Complete</button></td>
+          `;
+        }
+        tr.querySelector('button').addEventListener('click', function (e) {
+          deleteRow(this);
+        });
+        return tr;
+      }
+
+      function insertRowToDOM(row) {
+        const tbody = document.getElementById('tbody');
+        const newDate = new Date(row.children[0].innerText);
+        // TODO: Binary search for insertion position. Once input space gets to a certain size (<= 10
+        //       maybe), just do a linear scan
+        const children = Array.from(tbody.children);
+        const insertBeforePos = children
+          .map((child) => {
+            return { date: new Date(child.children[0].innerText), node: child };
+          })
+          .find((elem) => {
+            return newDate > elem.date;
+          });
+        tbody.insertBefore(row, insertBeforePos.node);
+      }
+
+      async function addRow() {
+        const date = document.getElementById('inp-date').value;
+        const name = document.getElementById('inp-name').value.trim();
+        const email = document.getElementById('inp-email').value.trim();
+        const bike = document.getElementById('inp-bike').value.trim();
+        const cost = document.getElementById('inp-cost').value.trim();
+        const errorMsg = document.getElementById('errorMsg');
+
+        if (!date || !name || !email || !bike || !cost) {
+          errorMsg.innerText = '⚠ Please fill in all fields before adding.';
+          errorMsg.classList.add('visible');
+          return;
+        }
+        if (parseFloat(cost) === null) {
+          errorMsg.innerText = '⚠ Please input correct cost value';
+          errorMsg.classList.add('visible');
+          return;
+        }
+        const emailRegex = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})$/;
+        if (!emailRegex.test(email)) {
+          errorMsg.innerText = '⚠ Please input a correct email value.';
+          errorMsg.classList.add('visible');
+          return;
+        }
+
+        errorMsg.classList.remove('visible');
+        const row = createRow(
+          { date, name, email, bike, cost, id: null },
+          true,
+        );
+        insertRowToDOM(row);
+
+        // Clear inputs
+        ['inp-name', 'inp-email', 'inp-bike', 'inp-cost'].forEach((id) => {
+          document.getElementById(id).value = '';
+        });
+
+        updateStats();
+
+        const response = await fetch('/api/transactions/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            date,
+            total_cost: parseFloat(cost),
+            customer: {
+              first_name: name,
+              last_name: '',
+              email,
+              phone_number: null,
+            },
+            bike: {
+              model: bike,
+              make: '',
+            },
+          }),
+        });
+        if (response.status !== 201) {
+          console.error(`Error creating transaction: ${await response.text()}`);
+          row.remove();
+          alert(
+            'Something went wrong creating the transaction. Check logs for details',
+          );
+          return;
+        }
+        const newId = (await response.json())['id'];
+        const completeBtn = row.querySelector('button');
+        completeBtn.id = `transaction-${newId}`;
+        completeBtn.disabled = false;
+      }
+
+      async function fetchData() {
+        const response = await fetch('/api/transactions');
+        if (response.status !== 200) {
+          alert(
+            'There was a problem fetching transaction data. Check logs for details',
+          );
+          return;
+        }
+        const transactions = await response.json();
+        transactions.forEach((transaction) => {
+          const row = createRow({
+            date: transaction['transaction_date'],
+            name:
+              transaction['customer']['first_name'] +
+              ' ' +
+              transaction['customer']['last_name'],
+            email: transaction['customer']['email'],
+            bike: transaction['bike']['model'],
+            cost: `${transaction['total_cost']}`,
+            id: transaction['transaction_id'],
+          });
+          const tbody = document.getElementById('tbody');
+          tbody.appendChild(row);
+        });
+      }
+
+      // Allow Enter key to add row
+      document.addEventListener('keydown', (e) => {
+        if (
+          e.key === 'Enter' &&
+          [
+            'inp-date',
+            'inp-name',
+            'inp-email',
+            'inp-bike',
+            'inp-cost',
+          ].includes(e.target.id)
+        ) {
+          addRow();
+        }
+      });
+
+      document
+        .getElementById('btn-add-transaction')
+        .addEventListener('click', () => addRow());
+
+      await fetchData();
+      updateStats();
+
+      // Set today as default date
+      document.getElementById('inp-date').valueAsDate = new Date();
+    </script>
+  </body>
+</html>

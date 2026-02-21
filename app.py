@@ -1,5 +1,6 @@
 from flask import Flask
 from routes.transactions import bp as transactions_bp
+from routes.pages import bp as pages_bp
 
 
 def create_app() -> Flask:
@@ -11,15 +12,12 @@ def create_app() -> Flask:
     """
     app = Flask(__name__)
 
-    @app.route("/")
-    def index():
-        return "Hello world"
-
     app.register_blueprint(transactions_bp)
+    app.register_blueprint(pages_bp)
 
     return app
 
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
