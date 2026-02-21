@@ -8,7 +8,8 @@ To start the web server:
 docker compose up
 ```
 
-To remove the related containers and volumes after you're done, run:
+The web server will by default bind to `http://127.0.0.1:5000`. To remove the related containers
+and volumes after you're done, run:
 
 ```
 docker compose down -v
@@ -30,7 +31,7 @@ after `docker compose up` is run).
 The backend took precedence over the frontend in terms of design for this project, so I will talk
 mostly about that.
 
-Claude was used to generate basic front end styling.
+Claude was used to generate basic frontend styling.
 
 Tech stack:
 
@@ -69,18 +70,24 @@ I will now talk about some of the design decisions I made:
    and also helped with fixture testing. The DB username and passwords passed via environment variables.
 6. Documentation written used when necessary.
 7. All backend code is type safe (type-checked with `mypy` version 1.19.1)
-8. I generally try to stay away from front end dependencies, including frameworks, because they have a
+8. I generally try to stay away from frontend dependencies, including frameworks, because they have a
    high chance of breaking, having safety vulnerabilities, and causing maintainability headaches. For
-   a project requiring a complicated front end, I would consider using React or Svelte. Native web
+   a project requiring a complicated frontend, I would consider using React or Svelte. Native web
    components generally can get the job done pretty well, though.
 
 Another note is that I saw lots of opportunities for network optimizations (preloading much of the
 information is possible), but I stayed away from that to stay in accordance with the take home
 assignment document.
 
+The frontend for this project still required some thought but generally I was comfortable being more
+liberal with my code here. Claude wrote a basic frontend (that didn't make any API calls but had some
+basic functionality). After fixing a few tiny errors Claude made, I implemented basic frontend input
+validation (in addition to the backend input validation).
+
 ## Features
 
 - All features in the document requested
 - The ability to create and delete transactions on the frontend and on the backend
 - Various table niceities
-- Front end doesn't look half-bad (thanks Claude)
+- Frontend doesn't look half-bad (thanks Claude)
+- All API end points have full input validation
