@@ -492,7 +492,11 @@
           .find((elem) => {
             return newDate > elem.date;
           });
-        tbody.insertBefore(row, insertBeforePos.node);
+        if (insertBeforePos === undefined) {
+          tbody.append(row);
+        } else {
+          tbody.insertBefore(row, insertBeforePos.node);
+        }
       }
 
       async function addRow() {
